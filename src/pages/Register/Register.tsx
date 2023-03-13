@@ -6,6 +6,8 @@ import Input from 'src/components/Input'
 import { schema, Schema } from 'src/utils/rules'
 import { registerAccount } from 'src/apis/auth.api'
 import { omit } from 'lodash'
+import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { ResponseApi } from 'src/types/utils.type'
 
 type FormData = Schema
 
@@ -13,6 +15,7 @@ const Register = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors }
   } = useForm<FormData>({
     resolver: yupResolver(schema)
@@ -27,6 +30,19 @@ const Register = () => {
     registerAccountMutation.mutate(body, {
       onSuccess: (data) => {
         console.log(data)
+      },
+      onError(error) {
+        if (isAxiosUnprocessableEntityError<ResponseApi<Omit<FormData, 'confirm_password'>>>(error)) {
+          const formError = error.response?.data.data
+          if (formError) {
+            Object.keys(formError).forEach((key) => {
+              setError(key as keyof Omit<FormData, 'confirm_password'>, {
+                message: formError[key as keyof Omit<FormData, 'confirm_password'>],
+                type: 'Server'
+              })
+            })
+          }
+        }
       }
     })
   })
