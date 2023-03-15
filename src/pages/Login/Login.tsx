@@ -6,11 +6,14 @@ import Input from 'src/components/Input'
 import { Schema, schema } from 'src/utils/rules'
 import { loginAccount } from 'src/apis/auth.api'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-import { ResponseApi } from 'src/types/utils.type'
+import { ErrorResponse } from 'src/types/utils.type'
+import { useContext } from 'react'
+import { AppContext } from 'src/contexts/app.context'
 
 type FormData = Omit<Schema, 'confirm_password'>
 const loginSchema = schema.omit(['confirm_password'])
 const Login = () => {
+  const { setIsAuthenticated } = useContext(AppContext)
   const {
     register,
     handleSubmit,
@@ -27,9 +30,10 @@ const Login = () => {
     loginAccountMutation.mutate(body, {
       onSuccess: (data) => {
         console.log(data)
+        setIsAuthenticated(true)
       },
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ResponseApi<FormData>>(error)) {
+        if (isAxiosUnprocessableEntityError<ErrorResponse<FormData>>(error)) {
           const formError = error.response?.data.data
           if (formError) {
             Object.keys(formError).forEach((key) => {
