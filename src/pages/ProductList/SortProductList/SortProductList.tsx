@@ -16,7 +16,7 @@ const SortProductList = () => {
             Bán chạy
           </Button>
           <select
-            value=''
+            defaultValue=''
             className='h-8 bg-white px-4 text-left text-sm capitalize text-black outline-none hover:bg-slate-100'
           >
             <option value='' disabled>
