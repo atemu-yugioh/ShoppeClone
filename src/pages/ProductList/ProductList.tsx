@@ -1,8 +1,19 @@
+import { useQuery } from '@tanstack/react-query'
+import { useSearchParams } from 'react-router-dom'
+import productApi from 'src/apis/product.api'
+import useQueryParams from 'src/hooks/useQueryParams'
 import AsideFilter from './AsideFilter'
 import Product from './Product/Product'
 import SortProductList from './SortProductList'
 
 const ProductList = () => {
+  const queryParams = useQueryParams()
+  const { data } = useQuery({
+    queryKey: ['products', queryParams],
+    queryFn: () => {
+      return productApi.getProducts(queryParams)
+    }
+  })
   return (
     <div className='bg-gray-200 py-6'>
       <div className='container'>
@@ -13,13 +24,11 @@ const ProductList = () => {
           <div className='col-span-9'>
             <SortProductList />
             <div className='mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
-              {Array(30)
-                .fill(0)
-                .map((_, index) => (
-                  <div className='col-span-1' key={index}>
-                    <Product />
-                  </div>
-                ))}
+              {data?.data.data.products.map((product, index) => (
+                <div className='col-span-1' key={index}>
+                  <Product product={product} />
+                </div>
+              ))}
             </div>
           </div>
         </div>

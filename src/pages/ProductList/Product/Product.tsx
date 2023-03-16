@@ -1,14 +1,19 @@
 import { Link } from 'react-router-dom'
 import path from 'src/constants/path'
+import { Product as ProductType } from 'src/types/product.type'
 
-const Product = () => {
+interface Props {
+  product: ProductType
+}
+
+const Product = ({ product }: Props) => {
   return (
     <Link to={path.home}>
       <div className='overflow-hidden rounded-sm bg-white shadow transition-transform duration-100 hover:translate-y-[-0.04rem] hover:shadow-md'>
         <div className='relative w-full bg-red-50 pt-[100%]'>
           <img
-            src='https://cf.shopee.vn/file/ea0f159f3f4c713abcf56b5ba73840b9_tn'
-            alt=''
+            src={product.image}
+            alt={product.name}
             className='absolute top-0 left-0 h-full w-full bg-white object-cover'
           />
         </div>
@@ -20,11 +25,11 @@ const Product = () => {
           <div className='mt-3 flex items-center'>
             <div className='max-w-[50%] truncate text-sm text-gray-500 line-through'>
               <span className='text-xs'>₫</span>
-              <span>5.000</span>
+              <span>{product.price_before_discount}</span>
             </div>
             <div className='ml-1 truncate text-orange'>
               <span className='text-xs'>₫</span>
-              <span>1.000</span>
+              <span>{product.price}</span>
             </div>
           </div>
           <div className='mt-3 flex items-center justify-end'>
@@ -62,7 +67,7 @@ const Product = () => {
                 </svg>
               </div>
               <div className='ml-2 text-sm'>
-                <span>5.66k</span>
+                <span>{product.sold}</span>
                 <span className='ml-1'>Đã bán</span>
               </div>
             </div>
