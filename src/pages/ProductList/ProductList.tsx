@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { isUndefined, omitBy } from 'lodash'
-import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
 import Pagination from 'src/components/Pagination'
+import { sortBy } from 'src/constants/product'
 import useQueryParams from 'src/hooks/useQueryParams'
 import { ProductListConfig } from 'src/types/product.type'
 import AsideFilter from './AsideFilter'
@@ -20,7 +19,7 @@ const ProductList = () => {
     {
       page: queryParams.page || '1',
       limit: queryParams.limit || '10',
-      sort_by: queryParams.sort_by,
+      sort_by: queryParams.sort_by || sortBy.createdAt,
       exclude: queryParams.exclude,
       name: queryParams.name,
       order: queryParams.order,
@@ -46,7 +45,7 @@ const ProductList = () => {
               <AsideFilter />
             </div>
             <div className='col-span-9'>
-              <SortProductList />
+              <SortProductList queryConfig={queryConfig} pageSize={data.data.data.pagination.page_size} />
               <div className='mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
                 {data?.data.data.products.map((product, index) => (
                   <div className='col-span-1' key={index}>
