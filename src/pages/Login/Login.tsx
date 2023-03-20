@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import Input from 'src/components/Input'
 import { Schema, schema } from 'src/utils/rules'
-import { loginAccount } from 'src/apis/auth.api'
+import authApi from 'src/apis/auth.api'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponse } from 'src/types/utils.type'
 import { useContext } from 'react'
@@ -12,8 +12,9 @@ import { AppContext } from 'src/contexts/app.context'
 import Button from 'src/components/Button'
 import path from 'src/constants/path'
 
-type FormData = Omit<Schema, 'confirm_password'>
-const loginSchema = schema.omit(['confirm_password'])
+// type FormData = Omit<Schema, 'confirm_password'>
+type FormData = Pick<Schema, 'email' | 'password'>
+const loginSchema = schema.pick(['email', 'password'])
 const Login = () => {
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const {
@@ -25,7 +26,7 @@ const Login = () => {
     resolver: yupResolver(loginSchema)
   })
   const loginAccountMutation = useMutation({
-    mutationFn: (body: FormData) => loginAccount(body)
+    mutationFn: (body: FormData) => authApi.loginAccount(body)
   })
   const onSubmit = handleSubmit((data) => {
     const body = data
