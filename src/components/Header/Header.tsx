@@ -1,12 +1,30 @@
 import { useContext } from 'react'
-import { useMutation } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import { AppContext } from 'src/contexts/app.context'
 import Popover from '../Popover'
 import path from 'src/constants/path'
 import authApi from 'src/apis/auth.api'
+import useQueryConfig from 'src/hooks/useQueryConfig'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { schema } from 'src/utils/rules'
+import { omit } from 'lodash'
+import { purchasesStatus } from 'src/constants/purchase'
+import purchaseApi from 'src/apis/purchase.api'
+import noproduct from 'src/assets/images/no-product.png'
+import CartItem from '../CartItem'
 
+const nameSchema = schema.pick(['name'])
+const MAX_PURCHASE = 5
 const Header = () => {
+  const queryConfig = useQueryConfig()
+  const { handleSubmit, register } = useForm({
+    defaultValues: {
+      name: ''
+    },
+    resolver: yupResolver(nameSchema)
+  })
   const { isAuthenticated, setIsAuthenticated, profile, setProfile } = useContext(AppContext)
   const logoutMutation = useMutation({
     mutationFn: authApi.logoutAccount,
@@ -15,9 +33,37 @@ const Header = () => {
       setProfile(null)
     }
   })
+
+  const { data: purchasesInCartData } = useQuery({
+    queryKey: ['purchases', { status: purchasesStatus.inCart }],
+    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart })
+  })
+
+  const purchaseInCart = purchasesInCartData?.data.data
+
   const handleLogout = () => {
     logoutMutation.mutate()
   }
+
+  const navigate = useNavigate()
+  const onSubmitSearch = handleSubmit((data) => {
+    const config = queryConfig.order
+      ? omit(
+          {
+            ...queryConfig,
+            name: data.name
+          },
+          ['order', 'sort_by']
+        )
+      : {
+          ...queryConfig,
+          name: data.name
+        }
+    navigate({
+      pathname: path.home,
+      search: createSearchParams(config).toString()
+    })
+  })
   return (
     <div className='bg-[linear-gradient(-180deg,#f53d2d,#f63)] pb-5 pt-2 text-white'>
       <div className='container'>
@@ -115,14 +161,15 @@ const Header = () => {
               </g>
             </svg>
           </Link>
-          <form className='col-span-9'>
+          <form className='col-span-9' onSubmit={onSubmitSearch}>
             <div className='flex rounded-sm bg-white p-1'>
               <input
                 type='text'
-                name='search'
                 className='flex-grow border-none bg-transparent px-3 py-2 text-black outline-none'
                 placeholder='Free Ship Đơn Từ 0Đ'
+                {...register('name')}
               />
+
               <button className=' flex-shrink-0  rounded-sm bg-orange py-2 px-6 hover:opacity-90'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
@@ -145,39 +192,35 @@ const Header = () => {
             className='cols-span-1 justify-self-end'
             renderPopover={
               <div className='relative max-w-[400px] rounded-sm border border-gray-200 bg-white text-sm shadow-md'>
-                <div className='p-2'>
-                  <div className='capitalize text-gray-400'>sản phẩm mới thêm</div>
-                  <div className='mt-5'>
-                    {/* item */}
-                    <div className='mt-4 flex'>
-                      <div className='flex-shrink-0'>
-                        <img
-                          src='https://cf.shopee.vn/file/sg-11134201-22110-s3ycuwtvgvjvb4_tn'
-                          alt='anh'
-                          className='h-11 w-11 object-cover'
-                        />
+                {purchaseInCart?.length ? (
+                  <div className='p-2'>
+                    <div className='capitalize text-gray-400'>sản phẩm mới thêm</div>
+                    <div className='mt-5'>
+                      {/* item */}
+                      {purchaseInCart.slice(0, MAX_PURCHASE).map((purchase) => (
+                        <CartItem purchase={purchase} key={purchase._id} />
+                      ))}
+                    </div>
+                    <div className='mt-6 flex items-center justify-between'>
+                      <div className='text-xs capitalize text-gray-500'>
+                        {purchaseInCart.length > MAX_PURCHASE ? purchaseInCart.length - MAX_PURCHASE : ''} Thêm hàng vào
+                        giỏ
                       </div>
-                      <div className='ml-2 flex-grow overflow-hidden'>
-                        <div className='truncate'>
-                          [LIFEMCMBP2 -12% đơn 250K] Bộ Nồi Inox 3 Đáy SUNHOUSE SH334 16, 20, 24 cm
-                        </div>
-                      </div>
-                      <div className='ml-2 flex-shrink-0'>
-                        <span className='text-orange'>₫469.000</span>
-                      </div>
+                      <button className='rounded-sm bg-orange px-4 py-2 capitalize text-white hover:bg-opacity-90'>
+                        Xem giỏ hàng
+                      </button>
                     </div>
                   </div>
-                  <div className='mt-6 flex items-center justify-between'>
-                    <div className='text-xs capitalize text-gray-500'>Thêm hàng vào giỏ</div>
-                    <button className='rounded-sm bg-orange px-4 py-2 capitalize text-white hover:bg-opacity-90'>
-                      Xem giỏ hàng
-                    </button>
+                ) : (
+                  <div className='flex h-[300px] w-[300px] flex-col items-center justify-center p-2'>
+                    <img src={noproduct} alt='no purchase' className='2-24 h-24' />
+                    <div className='mt-3 capitalize'>Chưa có sản phẩm</div>
                   </div>
-                </div>
+                )}
               </div>
             }
           >
-            <Link to={path.home}>
+            <Link to={path.home} className='relative'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'
@@ -192,6 +235,9 @@ const Header = () => {
                   d='M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'
                 />
               </svg>
+              <span className='absolute top-[-5px] left-[17px] rounded-full bg-white px-[9px] py-[1px] text-xs text-orange'>
+                {purchaseInCart?.length}
+              </span>
             </Link>
           </Popover>
         </div>
