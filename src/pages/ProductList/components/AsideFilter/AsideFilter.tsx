@@ -6,10 +6,10 @@ import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import Button from 'src/components/Button'
 import InputNumber from 'src/components/InputNumber'
 import path from 'src/constants/path'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 import { Category } from 'src/types/category.type'
 import { NoUndefinedField } from 'src/types/utils.type'
 import { schema, Schema } from 'src/utils/rules'
-import { QueryConfig } from '../../ProductList'
 import RatingStar from '../RatingStar'
 
 interface Props {

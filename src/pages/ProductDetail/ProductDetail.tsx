@@ -5,8 +5,9 @@ import { useParams } from 'react-router'
 import productApi from 'src/apis/product.api'
 import InputNumber from 'src/components/InputNumber'
 import ProductRating from 'src/components/ProductRating'
-import { Product } from 'src/types/product.type'
+import { Product as ProductType, ProductListConfig } from 'src/types/product.type'
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from 'src/utils/utils'
+import Product from '../ProductList/components/Product'
 
 const ProductDetail = () => {
   const { nameId } = useParams()
@@ -25,6 +26,17 @@ const ProductDetail = () => {
     [currentIndexImage, product]
   )
 
+  const queryConfig: ProductListConfig = { limit: '20', page: '1', category: product?.category._id }
+
+  const { data: productsData } = useQuery({
+    queryKey: ['products', queryConfig],
+    queryFn: () => {
+      return productApi.getProducts(queryConfig)
+    },
+    staleTime: 3 * 60 * 1000,
+    enabled: Boolean(product)
+  })
+
   useEffect(() => {
     if (product && product.images.length) {
       setActiveImage(product.images[0])
@@ -36,7 +48,7 @@ const ProductDetail = () => {
   }
 
   const next = () => {
-    if (currentIndexImage[1] < (product as Product).images.length) {
+    if (currentIndexImage[1] < (product as ProductType).images.length) {
       setCurrentIndexImage((prev) => [prev[0] + 1, prev[1] + 1])
       // setActiveImage((product as Product).images[currentIndexImage[1]])
     }
@@ -243,6 +255,20 @@ const ProductDetail = () => {
               }}
             />
           </div>
+        </div>
+      </div>
+      <div className='mt-8'>
+        <div className='container'>
+          <div className='uppercase text-gray-400'>Có thể bạn cũng thích</div>
+          {productsData && (
+            <div className='mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'>
+              {productsData.data.data.products.map((product) => (
+                <div className='col-span-1' key={product._id}>
+                  <Product product={product} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
