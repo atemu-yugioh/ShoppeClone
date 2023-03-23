@@ -5,7 +5,6 @@ import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import productApi from 'src/apis/product.api'
 import purchaseApi from 'src/apis/purchase.api'
-import InputNumber from 'src/components/InputNumber'
 import ProductRating from 'src/components/ProductRating'
 import QuantityController from 'src/components/QuantityController'
 import { purchasesStatus } from 'src/constants/purchase'
@@ -208,6 +207,7 @@ const ProductDetail = () => {
                   onDecrease={handleBuyCount}
                   onType={handleBuyCount}
                   value={buyCount}
+                  classNameWrapper='ml-8 flex items-center'
                 />
                 <div className='ml-6 text-sm text-gray-500'>{product.quantity} sản phẩm có sẵn</div>
               </div>
