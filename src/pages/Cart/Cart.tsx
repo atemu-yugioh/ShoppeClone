@@ -112,8 +112,10 @@ export default function Cart() {
   }
 
   const handleDeleteManyPurchase = () => {
-    const purchaseIds = extendedPurchase.map((purchase) => purchase._id)
-    deletePurchaseMutation.mutate(purchaseIds)
+    if (checkedPurchases.length) {
+      const purchaseIds = extendedPurchase.map((purchase) => purchase._id)
+      deletePurchaseMutation.mutate(purchaseIds)
+    }
   }
 
   const handleBuyProduct = () => {
