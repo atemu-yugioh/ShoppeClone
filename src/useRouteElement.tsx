@@ -9,8 +9,11 @@ import Cart from './pages/Cart'
 import Login from './pages/Login'
 import ProductDetail from './pages/ProductDetail'
 import ProductList from './pages/ProductList'
-import Profile from './pages/Profile'
 import Register from './pages/Register'
+import UserLayout from './pages/User/layouts/UserLayout'
+import ChangePassword from './pages/User/pages/ChangePassword'
+import HistoryPurchase from './pages/User/pages/HistoryPurchase'
+import Profile from './pages/User/pages/Profile'
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
   return isAuthenticated ? <Outlet /> : <Navigate to={path.login} />
@@ -41,16 +44,24 @@ const useRouteElement = () => {
       )
     },
     {
-      path: '',
-      element: <ProtectedRoute />,
+      path: path.user,
+      element: (
+        <MainLayout>
+          <UserLayout />
+        </MainLayout>
+      ),
       children: [
         {
           path: path.profile,
-          element: (
-            <MainLayout>
-              <Profile />
-            </MainLayout>
-          )
+          element: <Profile />
+        },
+        {
+          path: path.changePassword,
+          element: <ChangePassword />
+        },
+        {
+          path: path.historyPurchase,
+          element: <HistoryPurchase />
         }
       ]
     },
