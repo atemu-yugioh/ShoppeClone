@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { Children, useContext } from 'react'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
 import path from './constants/path'
 import { AppContext } from './contexts/app.context'
@@ -44,34 +44,40 @@ const useRouteElement = () => {
       )
     },
     {
-      path: path.user,
-      element: (
-        <MainLayout>
-          <UserLayout />
-        </MainLayout>
-      ),
+      path: '',
+      element: <ProtectedRoute />,
       children: [
         {
-          path: path.profile,
-          element: <Profile />
+          path: path.cart,
+          element: (
+            <CartLayout>
+              <Cart />
+            </CartLayout>
+          )
         },
         {
-          path: path.changePassword,
-          element: <ChangePassword />
-        },
-        {
-          path: path.historyPurchase,
-          element: <HistoryPurchase />
+          path: path.user,
+          element: (
+            <MainLayout>
+              <UserLayout />
+            </MainLayout>
+          ),
+          children: [
+            {
+              path: path.profile,
+              element: <Profile />
+            },
+            {
+              path: path.changePassword,
+              element: <ChangePassword />
+            },
+            {
+              path: path.historyPurchase,
+              element: <HistoryPurchase />
+            }
+          ]
         }
       ]
-    },
-    {
-      path: path.cart,
-      element: (
-        <CartLayout>
-          <Cart />
-        </CartLayout>
-      )
     },
     {
       path: '',
