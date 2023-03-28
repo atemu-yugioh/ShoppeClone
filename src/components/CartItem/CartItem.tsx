@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom'
+import path from 'src/constants/path'
 import { Purchase } from 'src/types/purchase.type'
-import { formatCurrency } from 'src/utils/utils'
+import { formatCurrency, generateNameId } from 'src/utils/utils'
 
 interface Props {
   purchase: Purchase
@@ -7,7 +9,10 @@ interface Props {
 
 const CartItem = ({ purchase }: Props) => {
   return (
-    <div className='mt-4 flex hover:bg-gray-100'>
+    <Link
+      to={`${path.home}${generateNameId({ name: purchase.product.name, id: purchase.product._id })}`}
+      className='mt-4 flex hover:bg-gray-100'
+    >
       <div className='flex-shrink-0'>
         <img src={purchase.product.image} alt={purchase.product.name} className='h-11 w-11 object-cover' />
       </div>
@@ -17,7 +22,7 @@ const CartItem = ({ purchase }: Props) => {
       <div className='ml-2 flex-shrink-0'>
         <span className='text-orange'>{formatCurrency(purchase.product.price)}</span>
       </div>
-    </div>
+    </Link>
   )
 }
 
