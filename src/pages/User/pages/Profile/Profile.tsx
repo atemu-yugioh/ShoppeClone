@@ -7,6 +7,7 @@ import userApi from 'src/apis/user.api'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
 import InputNumber from 'src/components/InputNumber'
+import config from 'src/constants/config'
 import { AppContext } from 'src/contexts/app.context'
 import { ErrorResponse } from 'src/types/utils.type'
 import { setProfileToLs } from 'src/utils/auth'
@@ -103,7 +104,15 @@ const Profile = () => {
 
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileFromLocal = event.target.files?.[0]
-    setFile(fileFromLocal)
+    fileInputRef.current?.setAttribute('value', '')
+    if (fileFromLocal && (fileFromLocal.size >= config.maxSizeUploadAvatar || !fileFromLocal.type.includes('image'))) {
+      toast.error(`Dung lượng file tối đa 1 MB. Định dạng:.JPEG, .PNG`, {
+        position: 'top-center',
+        autoClose: 1000
+      })
+    } else {
+      setFile(fileFromLocal)
+    }
   }
 
   const handleUpload = () => {
@@ -190,7 +199,17 @@ const Profile = () => {
             <div className='my-5 h-full w-24'>
               <img src={previewImage || getAvatar(avatar)} alt='' className='w-full w-full rounded-full object-cover' />
             </div>
-            <input className='hidden' type='file' accept='.jpg,.jpeg,.png' ref={fileInputRef} onChange={onFileChange} />
+            <input
+              className='hidden'
+              type='file'
+              accept='.jpg,.jpeg,.png'
+              ref={fileInputRef}
+              onChange={onFileChange}
+              onClick={(event) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ;(event.target as any).value = null
+              }}
+            />
             <button
               type='button'
               onClick={handleUpload}
