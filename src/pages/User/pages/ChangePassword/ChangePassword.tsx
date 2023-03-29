@@ -66,6 +66,7 @@ const ChangePassword = () => {
                 register={register}
                 name='password'
                 type='password'
+                className='relative'
                 placeholder='Mật khẩu cũ'
                 errorMessage={errors.password?.message}
                 classNameInput='w-full rounded-sm border border-gray-300 px-3 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
@@ -77,6 +78,7 @@ const ChangePassword = () => {
             <div className='sm:w-[80%] sm:pl-5'>
               <Input
                 register={register}
+                className='relative'
                 name='new_password'
                 type='password'
                 placeholder='Mật khẩu mới'
@@ -92,6 +94,7 @@ const ChangePassword = () => {
                 register={register}
                 name='confirm_password'
                 type='password'
+                className='relative'
                 placeholder='Nhập lại mật khẩu'
                 errorMessage={errors.confirm_password?.message}
                 classNameInput='w-full rounded-sm border border-gray-300 px-3 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
