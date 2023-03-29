@@ -72,7 +72,7 @@ const Register = () => {
                 name='password'
                 register={register}
                 type='password'
-                className='mt-2'
+                className='relative mt-2'
                 errorMessage={errors.password?.message}
                 placeholder='Password'
                 autoComplete='on'
@@ -82,7 +82,7 @@ const Register = () => {
                 name='confirm_password'
                 register={register}
                 type='password'
-                className='mt-2'
+                className='relative mt-2'
                 errorMessage={errors.confirm_password?.message}
                 placeholder='Confirm Password'
                 autoComplete='on'

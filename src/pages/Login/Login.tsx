@@ -69,7 +69,7 @@ const Login = () => {
                 name='password'
                 register={register}
                 type='password'
-                className='mt-2'
+                className='relative mt-2'
                 errorMessage={errors.password?.message}
                 placeholder='Password'
                 autoComplete='on'
